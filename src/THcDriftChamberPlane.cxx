@@ -299,6 +299,7 @@ Int_t THcDriftChamberPlane::DefineVariables( EMode mode )
     {"dist","Drift distancess",
      "fHits.THcDCHit.GetDist()"},
     {"nhit", "Number of hits", "GetNHits()"},
+    {"RefTime", "TDC reference time", "fTdcRefTime"},
     { 0 }
   };
 
@@ -352,7 +353,7 @@ Int_t THcDriftChamberPlane::ProcessHits(TClonesArray* rawhits, Int_t nexthit)
 
   fHits->Clear();
   fRawHits->Clear();
-
+  fTdcRefTime = kBig;
   Int_t nrawhits = rawhits->GetLast()+1;
   fNRawhits=0;
   Int_t ihit = nexthit;
@@ -366,6 +367,7 @@ Int_t THcDriftChamberPlane::ProcessHits(TClonesArray* rawhits, Int_t nexthit)
     Int_t wireNum = hit->fCounter;
     THcDCWire* wire = GetWire(wireNum);
     Bool_t First_Hit_In_Window = kTRUE;
+    if (hit->GetRawTdcHit().HasRefTime()) fTdcRefTime = hit->GetRawTdcHit().GetRefTime();
     for(UInt_t mhit=0; mhit<hit->GetRawTdcHit().GetNHits(); mhit++) {
       fNRawhits++;
       /* Sort into early, late and ontime */
@@ -392,6 +394,7 @@ Int_t THcDriftChamberPlane::SubtractStartTime()
 {
   Double_t StartTime = 0.0;
   if( fglHod ) StartTime = fglHod->GetStartTime();
+  if (StartTime == -1000) StartTime = 0.0;
   for(Int_t ihit=0;ihit<GetNHits();ihit++) { 
     THcDCHit *thishit = (THcDCHit*) fHits->At(ihit);
     Double_t temptime= thishit->GetTime()-StartTime;
