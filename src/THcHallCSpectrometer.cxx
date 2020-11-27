@@ -290,8 +290,10 @@ Int_t THcHallCSpectrometer::ReadDatabase( const TDatime& date )
   fPruneXp = .2;
   fPruneYp = .2;
   fPruneYtar = 20.;
-  fPruneDelta = 30.;
+  fPruneDelta = 30.;  
+  fPruneDelta = 25.;
   fPruneBeta = 30.;
+ 
   fPruneDf= 1;
   fPruneChiBeta= 100.;
   fPruneNPMT= 6;
